@@ -2026,20 +2026,20 @@ EcUkBi2IiIiIiIiIKCbpFuJMT0/HlClTUF1dHXaDS5YsQU5OTp/ljY2N6sH22B7bY3tsj+2xPbbH
 ERERERGFQi9ooTs8xJ/Mmer/QiIiIiIiIiKiaElK6lt2M6RMCyIiIiIiIiKiwcbZQ4iIiIiIiIgo
 JjFoQUREREREREQx6f8BhTMI5y6sKJIAAAAASUVORK5CYII='/>
 
-# 功能列表
+# 接口使用列表
 
 1. 创建 TTT 音视频引擎对象 [sharedEngineWithAppId](http://www.3ttech.cn/index.php?menu=72&type=iOS#sharedEngineWithAppId)
 2. 设置频道模式，PK 场景下频道模式需要设定为直播模式 [setChannelProfile](http://www.3ttech.cn/index.php?menu=72&type=iOS#setChannelProfile)
 3. 设置用户角色，PK 场景下需要角色设定为主播 [setClientRole](http://www.3ttech.cn/index.php?menu=72&type=iOS#setClientRole) 
-* 设置 SDK 的 CDN 推流地址 [configPublisher](http://www.3ttech.cn/index.php?menu=72&type=iOS#configPublisher) 
-* 加入频道 [joinChannelByKey](http://www.3ttech.cn/index.php?menu=72&type=iOS#joinChannelByKey)
-* 启动本地视频预览 [startPreview](http://www.3ttech.cn/index.php?menu=72&type=iOS#startPreview)
-* 设置本地视频显示属性 [setupLocalVideo](http://www.3ttech.cn/index.php?menu=72&type=iOS#setupLocalVideo)
-* 设置远端视频显示属性 [setupRemoteVideo](http://www.3ttech.cn/index.php?menu=72&type=iOS#setupRemoteVideo)
-* 停止本地视频预览 [stopPreview](http://www.3ttech.cn/index.php?menu=72&type=iOS#stopPreview)
-* 发起 PK [subscribeOtherChannel](http://www.3ttech.cn/index.php?menu=72&type=iOS#subscribeOtherChannel) 
-* 结束 PK [unSubscribeOtherChannel](http://www.3ttech.cn/index.php?menu=72&type=iOS#unSubscribeOtherChannel)
-* 离开频道 [leaveChannel](http://www.3ttech.cn/index.php?menu=72&type=iOS#leaveChannel)
+4. 设置 SDK 的 CDN 推流地址 [configPublisher](http://www.3ttech.cn/index.php?menu=72&type=iOS#configPublisher) 
+5. 加入频道 [joinChannelByKey](http://www.3ttech.cn/index.php?menu=72&type=iOS#joinChannelByKey)
+6. 启动本地视频预览 [startPreview](http://www.3ttech.cn/index.php?menu=72&type=iOS#startPreview)
+7. 设置本地视频显示属性 [setupLocalVideo](http://www.3ttech.cn/index.php?menu=72&type=iOS#setupLocalVideo)
+8. 设置远端视频显示属性 [setupRemoteVideo](http://www.3ttech.cn/index.php?menu=72&type=iOS#setupRemoteVideo)
+9. 停止本地视频预览 [stopPreview](http://www.3ttech.cn/index.php?menu=72&type=iOS#stopPreview)
+10. 发起 PK [subscribeOtherChannel](http://www.3ttech.cn/index.php?menu=72&type=iOS#subscribeOtherChannel) 
+11. 结束 PK [unSubscribeOtherChannel](http://www.3ttech.cn/index.php?menu=72&type=iOS#unSubscribeOtherChannel)
+12. 离开频道 [leaveChannel](http://www.3ttech.cn/index.php?menu=72&type=iOS#leaveChannel)
 
 可选方法
 
