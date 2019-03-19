@@ -33,7 +33,7 @@
 
 ### 实现细节
 * PK 模式下，双方主播的 CDN 推流地址应与普通模式时选用的 URL 地址是一致的，确保 CDN 观众无需切换 CDN 地址。
-* PK 模式下，若要结束 PK 模式，每个主播都调用 [unSubscribeOtherChannel]() 接口。例如 A 和 B 主播进行 PK，结束 PK 时 A 和 B 主播都需要调用。若只有一方调用，则另一方没有调用，没有调用接口的一方视频会继续接收，但音频会停止接收，状态就会不对。
+* PK 模式下，若要结束 PK 模式，每个主播都调用 [unSubscribeOtherChannel](http://www.3ttech.cn/index.php?menu=72&type=iOS#unSubscribeOtherChannel) 接口。例如 A 和 B 主播进行 PK，结束 PK 时 A 和 B 主播都需要调用。若只有一方调用，则另一方没有调用，没有调用接口的一方视频会继续接收，但音频会停止接收，状态就会不对。
 
 # 示例程序
 
