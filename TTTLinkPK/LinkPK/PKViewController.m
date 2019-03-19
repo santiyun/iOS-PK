@@ -86,7 +86,7 @@
 - (IBAction)muteLocalAudio:(UIButton *)sender {
     sender.selected = !sender.isSelected;
     _mutedSelf = sender.isSelected;
-    //开启/官博静音功能
+    //开启/关闭静音功能
     [PKManager.manager.rtcEngine muteLocalAudioStream:sender.isSelected];
 }
 

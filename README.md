@@ -43,10 +43,9 @@
 
 ## iOS工程配置
 
+* SDK支持 iOS 8.0+ 真机
+
 SDK包含**TTTRtcEngineKit.framework**和**TTTPlayerKit.framework** 
-
-**两个framework只支持真机，不支持模拟器**
-
 
 把下载的SDK放在demo的**TTTLib**目录下, 在**PKManager**文件填写申请的AppID
 

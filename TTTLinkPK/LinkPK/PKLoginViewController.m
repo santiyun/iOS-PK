@@ -37,7 +37,7 @@
 
 - (IBAction)enterChannel:(id)sender {
     if (_roomIDTF.text.length <= 0) {
-        [self showToast:@"请输入19位以内的房间ID"];
+        [self showToast:@"请输入正确的房间ID"];
         return;
     }
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
