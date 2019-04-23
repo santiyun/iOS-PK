@@ -221,7 +221,7 @@ private extension PKViewController {
             other.x = 0
             other.y = Double(remoteView.frame.origin.y / view.bounds.size.height)
             other.width = 0.5
-            other.height = 0.5 * 0.4 / 0.3
+            other.height = 0.375
             other.zOrder = 1
             other.alpha = 1
             other.renderMode = .render_Adaptive

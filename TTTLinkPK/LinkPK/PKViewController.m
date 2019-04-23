@@ -225,7 +225,7 @@
         other.x = 0;
         other.y = _otherView.frame.origin.y / self.view.bounds.size.height;
         other.width = 0.5;
-        other.height = 0.5 * 0.4 / 0.3;
+        other.height = 0.375;
         other.zOrder = 1;
         other.alpha = 1;
         other.renderMode = TTTRtc_Render_Adaptive;
