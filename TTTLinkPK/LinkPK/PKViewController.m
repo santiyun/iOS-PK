@@ -145,6 +145,7 @@
     _pkBtn.selected = NO;
     _otherView.hidden = YES;
     _roomIdTf.userInteractionEnabled = YES;
+    [PKManager.manager.rtcEngine unSubscribeOtherChannel:_roomIdTf.text.longLongValue];
 }
 //上报本地音视频上行码率
 - (void)rtcEngine:(TTTRtcEngineKit *)engine reportRtcStats:(TTTRtcStats *)stats {

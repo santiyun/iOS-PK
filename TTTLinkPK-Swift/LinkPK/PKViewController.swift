@@ -124,6 +124,8 @@ extension PKViewController: TTTRtcEngineDelegate {
         pkBtn.isSelected = false
         remoteView.isHidden = true
         pkRoomIDTF.isUserInteractionEnabled = true
+        let roomId = Int64(pkRoomIDTF.text!)!
+        PKManager.manager.rtcEngine.unSubscribeOtherChannel(roomId)
     }
     
     //上报本地音视频上行码率
