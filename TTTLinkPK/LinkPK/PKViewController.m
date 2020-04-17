@@ -17,7 +17,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *roomIdLabel;
 @property (weak, nonatomic) IBOutlet UILabel *audioStatsLabel;
 @property (weak, nonatomic) IBOutlet UILabel *videoStatsLabel;
-//
+//其他主播窗口
 @property (weak, nonatomic) IBOutlet UIView *otherView;
 @property (weak, nonatomic) IBOutlet UIImageView *otherPlayer;
 @property (weak, nonatomic) IBOutlet UIButton *otherVoiceBtn;
@@ -37,8 +37,9 @@
 - (TTTRtcVideoCompositingLayout *)layout {
     if (!_layout) {
         _layout = [[TTTRtcVideoCompositingLayout alloc] init];
-        _layout.canvasWidth = 352;
-        _layout.canvasHeight = 640;
+        //合流的分辨率可以同时放大一个系数
+        _layout.canvasWidth = 704;//352 * 2
+        _layout.canvasHeight = 640;//
         _layout.backgroundColor = @"#e8e6e8";
     }
     return _layout;
@@ -50,30 +51,31 @@
     _roomIdTf.text = [NSUserDefaults.standardUserDefaults stringForKey:@"T3_PK_OTHERROOMID"];
     
     PKManager.manager.rtcEngine.delegate = self;
-    //开启预览本地，然后设置渲染视图
-    [PKManager.manager.rtcEngine startPreview];
     TTTRtcVideoCanvas *videoCanvas = [[TTTRtcVideoCanvas alloc] init];
     videoCanvas.uid = PKManager.manager.uid;
     videoCanvas.view = _selfPlayer;
     videoCanvas.renderMode = TTTRtc_Render_Adaptive;
+    //设置本地渲染视图
     [PKManager.manager.rtcEngine setupLocalVideo:videoCanvas];
 }
 
 - (IBAction)startPK:(UIButton *)sender {
     if (_roomIdTf.text.length <= 0) {
-        [self showToast:@"请输入19位以内的房间ID"];
+        [self showToast:@"请输入正确的房间id"];
         return;
     }
     [_roomIdTf resignFirstResponder];
     if (sender.isSelected) {
-        //取消订阅其它频道主播视频，对用主播会退出自己所在房间
+        //取消订阅其它频道主播视频，对方主播会退出自己所在房间
         [PKManager.manager.rtcEngine unSubscribeOtherChannel:_roomIdTf.text.longLongValue];
+        [self adjustVideoSize:NO];
     } else {
         NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
         [ud setValue:_roomIdTf.text forKey:@"T3_PK_OTHERROOMID"];
         [ud synchronize];
         //订阅其它频道主播视频，会收到对应频道主播以副播的身份加入频道------注意双方必须相互订阅
         [PKManager.manager.rtcEngine subscribeOtherChannel:_roomIdTf.text.longLongValue];
+        [self adjustVideoSize:YES];
     }
 }
 
@@ -102,11 +104,17 @@
     [self presentViewController:alert animated:YES completion:nil];
 }
 
-- (void)dismiss {
-    //退出房间，如果当前正在跨房间连麦，先取消连麦
-    if (_otherUid > 0) {
-        [PKManager.manager.rtcEngine unSubscribeOtherChannel:_roomIdTf.text.longLongValue];
+//PK时调整本地分辨率
+- (void)adjustVideoSize:(BOOL)isPK {
+    if (isPK) {
+        [PKManager.manager.rtcEngine setVideoProfile:CGSizeMake(352, 640) frameRate:15 bitRate:1200];
+    } else {
+        [PKManager.manager.rtcEngine setVideoProfile:CGSizeMake(528, 960) frameRate:15 bitRate:1600];
     }
+}
+
+- (void)dismiss {
+    //离开频道
     [PKManager.manager.rtcEngine leaveChannel:nil];
     //开启预览，必须对应关闭预览
     [PKManager.manager.rtcEngine stopPreview];
@@ -141,37 +149,16 @@
 - (void)rtcEngine:(TTTRtcEngineKit *)engine didOfflineOfUid:(int64_t)uid reason:(TTTRtcUserOfflineReason)reason {
     if (uid != _otherUid) { return; }
     _otherUid = 0;
+    //结束PK之后刷新SEI
     [self refreshVideoCompositingLayout];
     _pkBtn.selected = NO;
     _otherView.hidden = YES;
     _roomIdTf.userInteractionEnabled = YES;
-    [PKManager.manager.rtcEngine unSubscribeOtherChannel:_roomIdTf.text.longLongValue];
+    //PK用户离线，需要取消订阅对方视频
+    [engine unSubscribeOtherChannel:_roomIdTf.text.longLongValue];
+    [self adjustVideoSize:NO];
 }
-//上报本地音视频上行码率
-- (void)rtcEngine:(TTTRtcEngineKit *)engine reportRtcStats:(TTTRtcStats *)stats {
-    _videoStatsLabel.text = [NSString stringWithFormat:@"V-↑%ldkbps", stats.txVideoKBitrate];
-    _audioStatsLabel.text = [NSString stringWithFormat:@"A-↑%ldkbps", stats.txAudioKBitrate];
-}
-//上报远端用户视频下行码率
-- (void)rtcEngine:(TTTRtcEngineKit *)engine remoteVideoStats:(TTTRtcRemoteVideoStats *)stats {
-    _otherVideoStatsLabel.text = [NSString stringWithFormat:@"V-↓%ldkbps", stats.receivedBitrate];
-}
-//上报远端用户音频下行码率
-- (void)rtcEngine:(TTTRtcEngineKit *)engine remoteAudioStats:(TTTRtcRemoteAudioStats *)stats {
-    _otherAudioStatsLabel.text = [NSString stringWithFormat:@"A-↓%ldkbps", stats.receivedBitrate];
-}
-//报告房间内用户的音量包括自己
-- (void)rtcEngine:(TTTRtcEngineKit *)engine reportAudioLevel:(int64_t)userID audioLevel:(NSUInteger)audioLevel audioLevelFullRange:(NSUInteger)audioLevelFullRange {
-    if (userID == PKManager.manager.uid) {
-        if (_mutedSelf) {
-            [_voiceBtn setImage:[UIImage imageNamed:@"voice_close"] forState:UIControlStateNormal];
-        } else {
-            [_voiceBtn setImage:[self getVoiceImage:audioLevel] forState:UIControlStateNormal];
-        }
-    } else if (userID == _otherUid) {
-        [_otherVoiceBtn setImage:[self getVoiceImage:audioLevel] forState:UIControlStateNormal];
-    }
-}
+
 //网络丢失（会自动重连）
 - (void)rtcEngineConnectionDidLost:(TTTRtcEngineKit *)engine {
     [TTProgressHud showHud:self.view message:@"网络链接丢失，正在重连..."];
@@ -206,15 +193,45 @@
     [self.view.window showToast:errorInfo];
     [self dismiss];
 }
+//---音视频数据统计
+//上报本地音视频上行码率
+- (void)rtcEngine:(TTTRtcEngineKit *)engine localAudioStats:(TTTRtcLocalAudioStats *)stats {
+    _audioStatsLabel.text = [NSString stringWithFormat:@"A-↑%ldkbps", stats.sentBitrate];
+}
+
+- (void)rtcEngine:(TTTRtcEngineKit *)engine localVideoStats:(TTTRtcLocalVideoStats *)stats {
+    _videoStatsLabel.text = [NSString stringWithFormat:@"V-↑%ldkbps_%ldfps", stats.sentBitrate, stats.sentFrameRate];
+}
+//上报远端用户视频下行码率
+- (void)rtcEngine:(TTTRtcEngineKit *)engine remoteVideoStats:(TTTRtcRemoteVideoStats *)stats {
+    _otherVideoStatsLabel.text = [NSString stringWithFormat:@"V-↓%ldkbps", stats.receivedBitrate];
+}
+//上报远端用户音频下行码率
+- (void)rtcEngine:(TTTRtcEngineKit *)engine remoteAudioStats:(TTTRtcRemoteAudioStats *)stats {
+    _otherAudioStatsLabel.text = [NSString stringWithFormat:@"A-↓%ldkbps", stats.receivedBitrate];
+}
+//报告房间内用户的音量包括自己
+- (void)rtcEngine:(TTTRtcEngineKit *)engine reportAudioLevel:(int64_t)userID audioLevel:(NSUInteger)audioLevel audioLevelFullRange:(NSUInteger)audioLevelFullRange {
+    if (userID == PKManager.manager.uid) {
+        if (_mutedSelf) {
+            [_voiceBtn setImage:[UIImage imageNamed:@"voice_close"] forState:UIControlStateNormal];
+        } else {
+            [_voiceBtn setImage:[self getVoiceImage:audioLevel] forState:UIControlStateNormal];
+        }
+    } else if (userID == _otherUid) {
+        [_otherVoiceBtn setImage:[self getVoiceImage:audioLevel] forState:UIControlStateNormal];
+    }
+}
 #pragma mark - Help
 //刷新SEI
 - (void)refreshVideoCompositingLayout {
+    //左右分屏
     [self.layout.regions removeAllObjects];
     TTTRtcVideoCompositingRegion *anchor = [[TTTRtcVideoCompositingRegion alloc] init];
     anchor.uid = PKManager.manager.uid;
     anchor.x = 0;
     anchor.y = 0;
-    anchor.width = 1;
+    anchor.width = 0.5;
     anchor.height = 1;
     anchor.zOrder = 0;
     anchor.alpha = 1;
@@ -223,10 +240,10 @@
     if (_otherUid > 0) {
         TTTRtcVideoCompositingRegion *other = [[TTTRtcVideoCompositingRegion alloc] init];
         other.uid = _otherUid;
-        other.x = 0;
-        other.y = _otherView.frame.origin.y / self.view.bounds.size.height;
+        other.x = 0.5;
+        other.y = 0;
         other.width = 0.5;
-        other.height = 0.375;
+        other.height = 1;
         other.zOrder = 1;
         other.alpha = 1;
         other.renderMode = TTTRtc_Render_Adaptive;

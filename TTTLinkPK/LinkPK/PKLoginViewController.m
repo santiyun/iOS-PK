@@ -37,7 +37,7 @@
 
 - (IBAction)enterChannel:(id)sender {
     if (_roomIDTF.text.length <= 0) {
-        [self showToast:@"请输入正确的房间ID"];
+        [self showToast:@"请输入正确的房间id"];//可以转换为long long的字符串
         return;
     }
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
@@ -55,16 +55,20 @@
     [engine setClientRole:TTTRtc_ClientRole_Anchor];
     //启用音频，该方法设置的状态是全局的，退出频道不会重置用户的状态
     [engine muteLocalAudioStream:NO];
-    //启动音量监听
+    //启动音量监听--不需要监听音量忽略该操作
     [engine enableAudioVolumeIndication:1000 smooth:3];
     
     //推流地址设置，连麦之后不需要重新设置推流地址
-    TTTPublisherConfigurationBuilder *builder = [[TTTPublisherConfigurationBuilder alloc] init];
-    NSString *pushURL = [@"rtmp://push.3ttech.cn/sdk/" stringByAppendingString:_roomIDTF.text];
-    [builder setPublisherUrl:pushURL];
-    [engine configPublisher:builder.build];
-    //设置本地视频分辨率
-    [engine setVideoProfile:TTTRtc_VideoProfile_360P swapWidthAndHeight:YES];
+    NSString *pushURL = [@"rtmp://push.3ttest.cn/sdk2/" stringByAppendingString:_roomIDTF.text];
+    TTTPublisherConfiguration *config = [[TTTPublisherConfiguration alloc] init];
+    config.videoBitrate = 1600;//PK时合流码率
+    config.videoFrameRate = 15;//PK时合流帧率
+    config.publishUrl = pushURL;
+    [engine configPublisher:config];
+    //设置编码参数   单路直播上行和推cdn参数
+    [engine setVideoProfile:CGSizeMake(528, 960) frameRate:15 bitRate:1600];
+    //开启预览
+    [engine startPreview];
     //加入频道
     [engine joinChannelByKey:nil channelName:_roomIDTF.text uid:_uid joinSuccess:nil];
 }
@@ -74,7 +78,7 @@
 }
 
 #pragma mark - TTTRtcEngineDelegate
-//加入频道成功，进入聊天室页面
+//加入频道成功，进入PK页面
 -(void)rtcEngine:(TTTRtcEngineKit *)engine didJoinChannel:(NSString *)channel withUid:(int64_t)uid elapsed:(NSInteger)elapsed {
     [TTProgressHud hideHud:self.view];
     [self performSegueWithIdentifier:@"PK" sender:nil];

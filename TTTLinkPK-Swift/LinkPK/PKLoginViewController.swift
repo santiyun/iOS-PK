@@ -48,12 +48,17 @@ class PKLoginViewController: UIViewController {
         engine?.muteLocalAudioStream(false)
         //启动音量监听
         engine?.enableAudioVolumeIndication(1000, smooth: 3)
+        
         //推流地址设置，连麦之后不需要重新设置推流地址
-        let builder = TTTPublisherConfigurationBuilder()
-        builder.setPublisherUrl("rtmp://push.3ttech.cn/sdk/" + rid.description)
-        engine?.configPublisher(builder.build())
+        let config = TTTPublisherConfiguration()
+        config.publishUrl = "rtmp://push.3ttest.cn/sdk2/" + rid.description
+        config.videoBitrate = 1600//PK时合流码率
+        config.videoFrameRate = 15//PK时合流帧率
+        engine?.configPublisher(config)
         //设置本地视频分辨率---竖屏模式下交换视频宽高
-        engine?.setVideoProfile(._VideoProfile_360P, swapWidthAndHeight: true)
+        engine?.setVideoProfile(CGSize(width: 528, height: 960), frameRate: 15, bitRate: 1600)
+        //开启预览
+        engine?.startPreview()
         //加入频道
         engine?.joinChannel(byKey: nil, channelName: roomIDTF.text!, uid: uid, joinSuccess: nil)
     }

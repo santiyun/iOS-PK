@@ -30,7 +30,8 @@ class PKViewController: UIViewController {
     @IBOutlet private weak var remoteAudioStatsLabel: UILabel!
     private lazy var layout: TTTRtcVideoCompositingLayout = {
         let layout  = TTTRtcVideoCompositingLayout()
-        layout.canvasWidth = 352
+        //合流的分辨率可以同时放大一个系数
+        layout.canvasWidth = 704//352 * 2
         layout.canvasHeight = 640
         layout.backgroundColor = "#e8e6e8"
         return layout
@@ -42,8 +43,7 @@ class PKViewController: UIViewController {
         pkRoomIDTF.text = UserDefaults.standard.string(forKey: "T3_PK_OTHERROOMID")
         
         PKManager.manager.rtcEngine.delegate = self
-        //开启预览本地，然后设置渲染视图
-        PKManager.manager.rtcEngine.startPreview()
+        //设置本地渲染视图
         let videoCanvas = TTTRtcVideoCanvas()
         videoCanvas.uid = PKManager.manager.uid
         videoCanvas.view = selfPlayer
@@ -61,11 +61,13 @@ class PKViewController: UIViewController {
         if sender.isSelected {
             //取消订阅其它频道主播视频，对用主播会退出自己所在房间
             PKManager.manager.rtcEngine.unSubscribeOtherChannel(roomId)
+            adjustVideoSize(false)
         } else {
             UserDefaults.standard.set(pkRoomIDTF.text, forKey: "T3_PK_OTHERROOMID")
             UserDefaults.standard.synchronize()
             //订阅其它频道主播视频，会收到对应频道主播以副播的身份加入频道------注意双方必须相互订阅
             PKManager.manager.rtcEngine.subscribeOtherChannel(roomId)
+            adjustVideoSize(true)
         }
     }
     
@@ -126,6 +128,7 @@ extension PKViewController: TTTRtcEngineDelegate {
         pkRoomIDTF.isUserInteractionEnabled = true
         let roomId = Int64(pkRoomIDTF.text!)!
         PKManager.manager.rtcEngine.unSubscribeOtherChannel(roomId)
+        adjustVideoSize(false)
     }
     
     //上报本地音视频上行码率
@@ -195,15 +198,19 @@ extension PKViewController: TTTRtcEngineDelegate {
 
 private extension PKViewController {
     func dimissVc() {
-        if otherUid > 0 {
-            PKManager.manager.rtcEngine.unSubscribeOtherChannel(Int64(pkRoomIDTF.text!)!)
-        }
         //开启预览，必须对应关闭预览
         PKManager.manager.rtcEngine.stopPreview()
         PKManager.manager.rtcEngine.leaveChannel(nil)
         dismiss(animated: true, completion: nil)
     }
     
+    func adjustVideoSize(_ isPK: Bool) {
+        if isPK {
+            PKManager.manager.rtcEngine.setVideoProfile(CGSize(width: 352, height: 640), frameRate: 15, bitRate: 1200)
+        } else {
+            PKManager.manager.rtcEngine.setVideoProfile(CGSize(width: 528, height: 960), frameRate: 15, bitRate: 1600)
+        }
+    }
     //刷新SEI
     func refreshVideoCompositingLayout() {
         layout.regions.removeAllObjects()

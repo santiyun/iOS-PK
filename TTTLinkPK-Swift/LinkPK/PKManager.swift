@@ -18,6 +18,6 @@ class PKManager: NSObject {
     private override init() {
         super.init()
         //初始化TTTRtcEngineKit对象，输入申请的AppID
-        rtcEngine = TTTRtcEngineKit.sharedEngine(withAppId: "a967ac491e3acf92eed5e1b5ba641ab7", delegate: nil)
+        rtcEngine = TTTRtcEngineKit.sharedEngine(withAppId: <#AppId#>, delegate: nil)
     }
 }

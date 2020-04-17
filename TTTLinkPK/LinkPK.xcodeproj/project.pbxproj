@@ -24,6 +24,7 @@
 		48F6D57221FED849008041CA /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 48F6D57121FED849008041CA /* libxml2.tbd */; };
 		48F6D57421FED851008041CA /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 48F6D57321FED851008041CA /* libc++.tbd */; };
 		48F6D57621FED860008041CA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 48F6D57521FED860008041CA /* libz.tbd */; };
+		48F6D57821FED87B008041CA /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 48F6D57721FED87B008041CA /* libiconv.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				48F6D57821FED87B008041CA /* libiconv.tbd in Frameworks */,
 				48F6D57621FED860008041CA /* libz.tbd in Frameworks */,
 				48F6D57421FED851008041CA /* libc++.tbd in Frameworks */,
 				48F6D57221FED849008041CA /* libxml2.tbd in Frameworks */,
@@ -361,6 +363,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 0417;
 				DEVELOPMENT_TEAM = 7XP66VHL84;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../TTTLib";
@@ -370,6 +373,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.8.0;
 				OTHER_LDFLAGS = (
 					"-framework",
 					TTTRtcEngineKit,
@@ -387,6 +391,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 0417;
 				DEVELOPMENT_TEAM = 7XP66VHL84;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../TTTLib";
@@ -396,6 +401,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.8.0;
 				OTHER_LDFLAGS = (
 					"-framework",
 					TTTRtcEngineKit,
